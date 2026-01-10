@@ -48,7 +48,7 @@
     "cache-manager": "latest",
     "chalk": "^4.1.2",
     "gradient-string": "^2.0.2",
-    "libsignal": "git+https://github.com/whiskeysockets/libsignal-node.git",
+    "libsignal": "npm:@rexxhayanasi/elaina-libsignal",
     "lru-cache": "^11.1.0",
     "music-metadata": "^11.7.0",
     "p-queue": "^9.0.0",
