@@ -733,6 +733,42 @@ await sock.sendMessage(jid, {
 })
 ```
 
+#### Pin Message
+```javascript
+await sock.sendMessage(jid, {
+    pin: {
+        type: 1, // 0 to remove
+        time: 86400, // 24 hours in seconds
+        key: message.key
+    }
+})
+```
+
+**Pin Time Options:**
+
+| Time | Seconds   |
+|------|-----------|
+| 24h  | 86,400    |
+| 7d   | 604,800   |
+| 30d  | 2,592,000 |
+
+#### Keep Message
+```javascript
+await sock.sendMessage(jid, {
+    keep: message.key,
+    type: 1, // 2 to unpin
+    time: 86400
+})
+```
+
+**Keep Time Options:**
+
+| Time | Seconds   |
+|------|-----------|
+| 24h  | 86,400    |
+| 7d   | 604,800   |
+| 30d  | 2,592,000 |
+
 #### Poll Message
 ```javascript
 await sock.sendMessage(jid, {
@@ -1336,51 +1372,6 @@ await sock.chatModify({ pin: true }, jid)
 // Unpin
 await sock.chatModify({ pin: false }, jid)
 ```
-
-
-#### Pin Message
-```javascript
-// Method 1: Using boolean (requires quoted message)
-await sock.sendMessage(jid, { pin: true }, { quoted: message })
-
-// Method 2: Using pin object with message key
-await sock.sendMessage(jid, {
-    pin: {
-        key: message.key  // or stanzaId, id, etc.
-    }
-})
-
-// Unpin message
-await sock.sendMessage(jid, {
-    pin: {
-        key: message.key,
-        unpin: true
-    }
-})
-
-// Alternative unpin syntax
-await sock.sendMessage(jid, { pin: false }, { quoted: message })
-```
-
-#### Keep Message
-```javascript
-await sock.sendMessage(jid, {
-    keep: message.key,
-    type: 1  // 1 to keep, 2 to unkeep
-})
-```
-
-**Pin/Keep Details:**
-
-| Operation | Method | Syntax |
-|-----------|--------|--------|
-| Pin (quoted) | Boolean | `{ pin: true }` with `{ quoted: message }` |
-| Pin (object) | Object | `{ pin: { key: message.key } }` |
-| Unpin (quoted) | Boolean | `{ pin: false }` with `{ quoted: message }` |
-| Unpin (object) | Object | `{ pin: { key: message.key, unpin: true } }` |
-| Keep | Key | `{ keep: message.key, type: 1 }` |
-| Unkeep | Key | `{ keep: message.key, type: 2 }` |
-
 
 ### Delete Chat
 ```javascript
