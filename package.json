@@ -1,7 +1,7 @@
 {
   "name": "@nexustechpro/baileys",
   "type": "module",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Advanced WhatsApp Web API client with interactive messages, product catalogs, carousels, events, payments, and polls.",
   "keywords": [
     "whatsapp",
