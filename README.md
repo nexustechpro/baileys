@@ -29,9 +29,9 @@
 - [🛠️ Data Store](#️-data-store)
 - [🔑 WhatsApp IDs](#-whatsapp-ids)
 - [💬 Sending Messages](#-sending-messages)
-  - [Non-Media Messages](#non-media-messages)
+  - [Text & Special Messages](#text--special-messages)
   - [Media Messages](#media-messages)
-  - [Interactive Messages](#interactive-messages)
+  - [Buttons & Interactive Messages](#buttons--interactive-messages)
 - [✏️ Message Modifications](#️-message-modifications)
 - [📥 Media Operations](#-media-operations)
 - [👥 Group Management](#-group-management)
@@ -61,7 +61,7 @@
 <td>
 
 ### Extended Features
-- 🎨 **Interactive Messages** - Buttons, lists, and native flows
+- 🎨 **Universal Button System** - Auto-converts any button format
 - 📸 **Media Handling** - Images, videos, audio, documents
 - 🤖 **Poll Support** - Create and manage polls
 - 📍 **Location Sharing** - Share locations with metadata
@@ -108,7 +108,6 @@ const { default: makeWASocket } = require('@nexustechpro/baileys')
 ---
 
 ## 🔌 Quick Start
-
 ```javascript
 import makeWASocket, { DisconnectReason, useMultiFileAuthState } from '@nexustechpro/baileys'
 
@@ -289,7 +288,6 @@ sock.ev.on('messages.update', async (event) => {
 ---
 
 ## 🛠️ Data Store
-
 ```javascript
 import makeWASocket, { makeInMemoryStore } from '@nexustechpro/baileys'
 
@@ -329,7 +327,7 @@ sock.ev.on('contacts.upsert', () => {
 
 ## 💬 Sending Messages
 
-### Non-Media Messages
+### Text & Special Messages
 
 #### Text Message
 ```javascript
@@ -519,175 +517,6 @@ await sock.sendMessage(jid, {
 }, { quoted: message })
 ```
 
-#### Interactive Message with Native Flow
-```javascript
-await sock.sendMessage(jid, {    
-    interactiveMessage: {      
-        title: "Hello World",      
-        footer: "NexusTechPro",      
-        image: { url: "https://example.com/image.jpg" },      
-        nativeFlowMessage: {        
-            messageParamsJson: JSON.stringify({          
-                limited_time_offer: {            
-                    text: "Limited offer!",            
-                    url: "https://nexustechpro.com",            
-                    copy_code: "NEXUS2025",            
-                    expiration_time: Date.now() + (24 * 60 * 60 * 1000)
-                },          
-                bottom_sheet: {            
-                    in_thread_buttons_limit: 2,            
-                    divider_indices: [1, 2, 3, 4, 5],            
-                    list_title: "Select Option",            
-                    button_title: "Click Here"          
-                },          
-                tap_target_configuration: {            
-                    title: "Tap Target",            
-                    description: "Description here",            
-                    canonical_url: "https://nexustechpro.com",            
-                    domain: "nexustechpro.com",            
-                    button_index: 0          
-                }        
-            }),        
-            buttons: [          
-                {            
-                    name: "single_select",            
-                    buttonParamsJson: JSON.stringify({              
-                        has_multiple_buttons: true            
-                    })          
-                },          
-                {            
-                    name: "call_permission_request",            
-                    buttonParamsJson: JSON.stringify({              
-                        has_multiple_buttons: true            
-                    })          
-                },          
-                {            
-                    name: "single_select",            
-                    buttonParamsJson: JSON.stringify({              
-                        title: "Select Option",              
-                        sections: [                
-                            {                  
-                                title: "Section Title",                  
-                                highlight_label: "Popular",                  
-                                rows: [                    
-                                    {                      
-                                        title: "Option 1",                      
-                                        description: "Description 1",                      
-                                        id: "row_1"                    
-                                    },
-                                    {                      
-                                        title: "Option 2",                      
-                                        description: "Description 2",                      
-                                        id: "row_2"                    
-                                    }
-                                ]                
-                            }              
-                        ],              
-                        has_multiple_buttons: true            
-                    })          
-                },          
-                {            
-                    name: "cta_copy",            
-                    buttonParamsJson: JSON.stringify({              
-                        display_text: "Copy Code",              
-                        id: "123456789",              
-                        copy_code: "NEXUS2025"            
-                    })          
-                }        
-            ]      
-        }    
-    }  
-}, { quoted: message })
-```
-
-#### Interactive Buttons
-```javascript
-// Example non header media
-await sock.sendMessage(jid, {
-    text: "Description of Message",
-    title: "Title of Message",
-    subtitle: "Subtitle Message",
-    footer: "Footer Message",
-    interactiveButtons: [
-        {
-            name: "quick_reply",
-            buttonParamsJson: JSON.stringify({
-                display_text: "Quick Reply",
-                id: "button_1"
-            })
-        },
-        {
-            name: "cta_url",
-            buttonParamsJson: JSON.stringify({
-                display_text: "Visit Website",
-                url: "https://nexustechpro.com"
-            })
-        }
-    ]
-}, { quoted: message })
-
-// Example with media
-await sock.sendMessage(jid, {
-    image: { url: "https://example.jpg" }, // or buffer
-    caption: "Description of Message",
-    title: "Title of Message",
-    subtitle: "Subtitle Message",
-    footer: "Footer Message",
-    media: true,
-    interactiveButtons: [
-        {
-            name: "quick_reply",
-            buttonParamsJson: JSON.stringify({
-                display_text: "Quick Reply",
-                id: "button_1"
-            })
-        },
-        {
-            name: "cta_url",
-            buttonParamsJson: JSON.stringify({
-                display_text: "Visit Website",
-                url: "https://nexustechpro.com"
-            })
-        }
-    ]
-}, { quoted: message })
-
-// Example with header product
-await sock.sendMessage(jid, {
-    product: {
-        productImage: { url: "https://example.jpg" }, // or buffer
-        productImageCount: 1,
-        title: "Product Title",
-        description: "Product Description",
-        priceAmount1000: 20000 * 1000,
-        currencyCode: "USD",
-        retailerId: "Retail",
-        url: "https://example.com",            
-    },
-    businessOwnerJid: "1234@s.whatsapp.net",
-    caption: "Description of Message",
-    title: "Title of Message",
-    footer: "Footer Message",
-    media: true,
-    interactiveButtons: [
-        {
-            name: "quick_reply",
-            buttonParamsJson: JSON.stringify({
-                display_text: "Quick Reply",
-                id: "button_1"
-            })
-        },
-        {
-            name: "cta_url",
-            buttonParamsJson: JSON.stringify({
-                display_text: "Visit Website",
-                url: "https://nexustechpro.com"
-            })
-        }
-    ]
-}, { quoted: message })
-```
-
 #### Forward Messages
 ```javascript
 const msg = getMessageFromStore() // implement this on your end
@@ -863,12 +692,10 @@ await sock.sendMessage(jid, {
     sticker: { url: './sticker.webp' }
 })
 ```
+
 #### Sticker Pack
 
-## Usage Examples
-
 ### Method 1: Direct Socket Method (Recommended)
-
 ```javascript
 await sock.stickerPackMessage(jid, {
     name: 'My Stickers',
@@ -885,7 +712,6 @@ await sock.stickerPackMessage(jid, {
 ```
 
 ### Method 2: Via sendMessage
-
 ```javascript
 await sock.sendMessage(jid, {
     stickerPack: {
@@ -903,94 +729,25 @@ await sock.sendMessage(jid, {
 }, { quoted: message });
 ```
 
----
-
-## Supported Image Formats
-
-Stickers automatically convert to WebP format. The following image formats are supported:
+### Supported Image Formats
 
 | Format | Support | Notes |
 |--------|---------|-------|
 | **WebP** | ✅ Full | Used as-is, no conversion needed |
 | **PNG** | ✅ Full | Auto-converts to WebP |
 | **JPG/JPEG** | ✅ Full | Auto-converts to WebP |
-| **GIF** | ✅ Limited | Converts to static WebP (animated GIFs become static) |
+| **GIF** | ✅ Limited | Converts to static WebP |
 | **BMP** | ✅ Full | Auto-converts to WebP |
-| **Video (MP4, MOV, WebM, etc.)** | ❌ Not supported | Only static images are supported |
+| **Video** | ❌ Not supported | Only static images |
 
----
+### Key Features
 
-## Sticker Data Formats
-
-Each sticker can be provided in multiple formats:
-
-### From Buffer
-```javascript
-{ 
-    data: fs.readFileSync('./sticker.png'), 
-    emojis: ['😊'] 
-}
-```
-
-### From File Path
-```javascript
-{ 
-    data: './stickers/sticker.jpg', 
-    emojis: ['😊'] 
-}
-```
-
-### From URL
-```javascript
-{ 
-    data: 'https://example.com/sticker.png', 
-    emojis: ['😊'] 
-}
-```
-
-### Cover Image
-The cover image supports all the same formats:
-
-```javascript
-// From buffer
-cover: fs.readFileSync('./cover.png')
-
-// From file path
-cover: './cover.jpg'
-
-// From URL
-cover: 'https://example.com/cover.png'
-```
-
-### Complete Example with Mixed Formats
-```javascript
-await sock.stickerPackMessage(jid, {
-    name: 'My Stickers',
-    publisher: 'Your Bot',
-    description: 'Collection of stickers',
-    stickers: [
-        { data: fs.readFileSync('./sticker1.png'), emojis: ['😊', '😄'] },
-        { data: './sticker2.jpg', emojis: ['😂'] },
-        { data: './sticker3.webp', emojis: ['🎉'] },
-        { data: 'https://example.com/sticker4.png', emojis: ['❤️'] }
-    ],
-    cover: './cover.jpg'
-});
-```
-
----
-
-## Key Features
-
-✅ **Automatic batching** - Splits packs >60 stickers into multiple messages  
-✅ **Compression** - Auto-compresses stickers exceeding 1MB  
+✅ **Automatic batching** - Splits packs >60 stickers  
+✅ **Compression** - Auto-compresses stickers >1MB  
 ✅ **Auto-conversion** - Converts PNG, JPG, GIF, BMP to WebP  
-✅ **Multiple formats** - Supports buffers, file paths, URLs, and streams  
-✅ **Rate limiting** - 2-second delays between batch sends  
+✅ **Multiple formats** - Supports buffers, file paths, URLs  
+✅ **Rate limiting** - 2-second delays between batches  
 ✅ **Error handling** - Gracefully skips invalid stickers  
-✅ **Emoji support** - Each sticker supports multiple emojis  
-✅ **Cover image** - Custom pack thumbnail
-
 
 #### View Once Message
 ```javascript
@@ -1003,11 +760,94 @@ await sock.sendMessage(jid, {
 
 ---
 
-### Interactive Messages
+### Buttons & Interactive Messages
 
-All button types available in NexusTechPro Baileys:
+#### Simple Text with Buttons
+```javascript
+await sock.sendMessage(jid, {
+    text: "Choose an option",
+    footer: "© NexusTechPro",
+    buttons: [
+        {
+            name: "quick_reply",
+            buttonParamsJson: JSON.stringify({
+                display_text: "Option 1",
+                id: "opt1"
+            })
+        },
+        {
+            name: "cta_url",
+            buttonParamsJson: JSON.stringify({
+                display_text: "Visit Website",
+                url: "https://nexustechpro.com",
+                merchant_url: "https://nexustechpro.com"
+            })
+        }
+    ]
+})
+```
 
-#### Quick Reply Button
+#### Image with Buttons
+```javascript
+await sock.sendMessage(jid, {
+    image: { url: "https://example.com/image.jpg" },
+    caption: "Description",
+    footer: "© NexusTechPro",
+    buttons: [
+        {
+            name: "quick_reply",
+            buttonParamsJson: JSON.stringify({
+                display_text: "Reply",
+                id: "btn1"
+            })
+        }
+    ]
+})
+```
+
+#### Video with Buttons
+```javascript
+await sock.sendMessage(jid, {
+    video: { url: "https://example.com/video.mp4" },
+    caption: "Watch this",
+    footer: "© NexusTechPro",
+    buttons: [
+        {
+            name: "quick_reply",
+            buttonParamsJson: JSON.stringify({
+                display_text: "Like",
+                id: "like"
+            })
+        }
+    ]
+})
+```
+
+#### Document with Buttons
+```javascript
+await sock.sendMessage(jid, {
+    document: { url: "./file.pdf" },
+    fileName: "Document.pdf",
+    mimetype: "application/pdf",
+    caption: "Read this",
+    footer: "© NexusTechPro",
+    buttons: [
+        {
+            name: "quick_reply",
+            buttonParamsJson: JSON.stringify({
+                display_text: "Download",
+                id: "download"
+            })
+        }
+    ]
+})
+```
+
+---
+
+### All Button Types
+
+#### 1. Quick Reply
 ```javascript
 {
     name: "quick_reply",
@@ -1018,7 +858,7 @@ All button types available in NexusTechPro Baileys:
 }
 ```
 
-#### URL Button
+#### 2. URL Button
 ```javascript
 {
     name: "cta_url",
@@ -1030,7 +870,7 @@ All button types available in NexusTechPro Baileys:
 }
 ```
 
-#### Call Button
+#### 3. Call Button
 ```javascript
 {
     name: "cta_call",
@@ -1041,7 +881,7 @@ All button types available in NexusTechPro Baileys:
 }
 ```
 
-#### Copy Button
+#### 4. Copy Button
 ```javascript
 {
     name: "cta_copy",
@@ -1053,7 +893,7 @@ All button types available in NexusTechPro Baileys:
 }
 ```
 
-#### Single Select (List)
+#### 5. List/Single Select
 ```javascript
 {
     name: "single_select",
@@ -1063,15 +903,15 @@ All button types available in NexusTechPro Baileys:
             title: "Section 1",
             highlight_label: "Popular",
             rows: [
-                { title: "Option 1", description: "Description 1", id: "opt1" },
-                { title: "Option 2", description: "Description 2", id: "opt2" }
+                { title: "Option 1", description: "Desc 1", id: "opt1" },
+                { title: "Option 2", description: "Desc 2", id: "opt2" }
             ]
         }]
     })
 }
 ```
 
-#### Call Permission Request
+#### 6. Call Permission Request
 ```javascript
 {
     name: "call_permission_request",
@@ -1079,6 +919,211 @@ All button types available in NexusTechPro Baileys:
         has_multiple_buttons: true
     })
 }
+```
+
+---
+
+### Classic Buttons (Old Style)
+
+For compatibility with older WhatsApp versions:
+```javascript
+await sock.sendMessage(jid, {
+    text: "Message with classic buttons",
+    footer: "Footer text",
+    buttons: [
+        {
+            buttonId: "btn1",
+            buttonText: { displayText: "Button 1" },
+            type: 1
+        },
+        {
+            buttonId: "btn2",
+            buttonText: { displayText: "Button 2" },
+            type: 1
+        }
+    ],
+    headerType: 1
+})
+```
+
+#### Header Types (Classic Buttons)
+
+| Value | Type | Description |
+|-------|------|-------------|
+| `0` | EMPTY | No header |
+| `1` | TEXT | Text header (use `title` field) |
+| `2` | DOCUMENT | Document header |
+| `3` | IMAGE | Image header |
+| `4` | VIDEO | Video header |
+| `5` | LOCATION | Location header |
+
+#### Button Types (Classic Buttons)
+
+| Value | Type | Description |
+|-------|------|-------------|
+| `1` | RESPONSE | Standard clickable button |
+| `2` | NATIVE_FLOW | Native flow button |
+
+**Example with Image Header:**
+```javascript
+await sock.sendMessage(jid, {
+    image: { url: "https://example.com/image.jpg" },
+    caption: "Body text",
+    footer: "Footer",
+    buttons: [
+        { buttonId: "btn1", buttonText: { displayText: "Button 1" }, type: 1 }
+    ],
+    headerType: 3
+})
+```
+
+---
+
+### Advanced: Native Flow Messages
+
+Complete example with all features:
+```javascript
+await sock.sendMessage(jid, {
+    interactiveMessage: {
+        title: "Interactive Message",
+        footer: "© NexusTechPro",
+        image: { url: "https://example.com/image.jpg" },
+        nativeFlowMessage: {
+            messageParamsJson: JSON.stringify({
+                limited_time_offer: {
+                    text: "Limited offer!",
+                    url: "https://nexustechpro.com",
+                    copy_code: "NEXUS2025",
+                    expiration_time: Date.now() + (24 * 60 * 60 * 1000)
+                },
+                bottom_sheet: {
+                    in_thread_buttons_limit: 2,
+                    divider_indices: [0, 1, 2],
+                    list_title: "Select Option",
+                    button_title: "Click Here"
+                },
+                tap_target_configuration: {
+                    title: "Tap Target",
+                    description: "Description",
+                    canonical_url: "https://nexustechpro.com",
+                    domain: "nexustechpro.com",
+                    button_index: 0
+                }
+            }),
+            buttons: [
+                {
+                    name: "single_select",
+                    buttonParamsJson: JSON.stringify({
+                        title: "Select",
+                        sections: [{
+                            title: "Options",
+                            rows: [
+                                { title: "Option 1", description: "Desc 1", id: "opt1" }
+                            ]
+                        }]
+                    })
+                },
+                {
+                    name: "cta_copy",
+                    buttonParamsJson: JSON.stringify({
+                        display_text: "Copy Code",
+                        copy_code: "PROMO2025"
+                    })
+                }
+            ]
+        }
+    }
+})
+```
+
+---
+
+### Interactive Buttons (Alternative Format)
+```javascript
+// Example non header media
+await sock.sendMessage(jid, {
+    text: "Description of Message",
+    title: "Title of Message",
+    subtitle: "Subtitle Message",
+    footer: "Footer Message",
+    interactiveButtons: [
+        {
+            name: "quick_reply",
+            buttonParamsJson: JSON.stringify({
+                display_text: "Quick Reply",
+                id: "button_1"
+            })
+        },
+        {
+            name: "cta_url",
+            buttonParamsJson: JSON.stringify({
+                display_text: "Visit Website",
+                url: "https://nexustechpro.com"
+            })
+        }
+    ]
+}, { quoted: message })
+
+// Example with media
+await sock.sendMessage(jid, {
+    image: { url: "https://example.jpg" }, // or buffer
+    caption: "Description of Message",
+    title: "Title of Message",
+    subtitle: "Subtitle Message",
+    footer: "Footer Message",
+    media: true,
+    interactiveButtons: [
+        {
+            name: "quick_reply",
+            buttonParamsJson: JSON.stringify({
+                display_text: "Quick Reply",
+                id: "button_1"
+            })
+        },
+        {
+            name: "cta_url",
+            buttonParamsJson: JSON.stringify({
+                display_text: "Visit Website",
+                url: "https://nexustechpro.com"
+            })
+        }
+    ]
+}, { quoted: message })
+
+// Example with header product
+await sock.sendMessage(jid, {
+    product: {
+        productImage: { url: "https://example.jpg" }, // or buffer
+        productImageCount: 1,
+        title: "Product Title",
+        description: "Product Description",
+        priceAmount1000: 20000 * 1000,
+        currencyCode: "USD",
+        retailerId: "Retail",
+        url: "https://example.com",            
+    },
+    businessOwnerJid: "1234@s.whatsapp.net",
+    caption: "Description of Message",
+    title: "Title of Message",
+    footer: "Footer Message",
+    media: true,
+    interactiveButtons: [
+        {
+            name: "quick_reply",
+            buttonParamsJson: JSON.stringify({
+                display_text: "Quick Reply",
+                id: "button_1"
+            })
+        },
+        {
+            name: "cta_url",
+            buttonParamsJson: JSON.stringify({
+                display_text: "Visit Website",
+                url: "https://nexustechpro.com"
+            })
+        }
+    ]
+}, { quoted: message })
 ```
 
 ---
